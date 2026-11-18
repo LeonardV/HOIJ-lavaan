@@ -15,7 +15,7 @@ instead of refitting the model for every bootstrap resample.
 | File | What it does |
 |---|---|
 | `00_install_dependencies.R` | Installs the development version of **lavaan** and the remaining packages. Run once. |
-| `hoij_core.R` | Computational kernel: casewise scores and curvature, third derivatives, the IJ1 and HOIJ-2 replicates. |
+| `hoij_core.R` | Computational kernel: casewise scores and curvature, third derivatives, the IJ and HOIJ-2 replicates. |
 | `01_worked_example.R` | Section 3. |
 | `02_timing_comparison.R` | Subsection 3.3: timing decomposition for the mediation (D = 30) and bifactor (D = 36) models, including nine free intercepts each. |
 | `03_simulation_study.R` | Section 4. |
