@@ -1066,7 +1066,7 @@ summ$mcse_cov <- sqrt(0.95 * 0.05 / pmax(summ$n_valid, 1))
 MAIN_FNS <- c("ab", "psi_speed", "omega_speed")   # <-- derde rij toegevoegd
 method_order <- c("wald_expected", "wald_hw", "mc_hw", "ij1", "hoij2", "boot")
 method_label <- c(wald_expected = "Wald (Expected)", wald_hw = "Wald (HW)",
-                  mc_hw = "Monte Carlo (HW)", ij1 = "IJ1 percentile",
+                  mc_hw = "Monte Carlo (HW)", ij1 = "IJ percentile",
                   hoij2 = "HOIJ-2 percentile", boot = "Bootstrap percentile")
 functional_label <- list(ab = quote(italic(ab)),
                          psi_speed = quote(psi[speed]),
@@ -1095,7 +1095,7 @@ col_map <- setNames(c("black", "grey45", "firebrick", "steelblue"),
 
 for (fn in MAIN_FNS) {
   for (N_val in sort(unique(design$N))) {
-    plot(NA, xlim = c(0.80, 1.00), ylim = c(0.5, length(method_order) + 0.5),
+    plot(NA, xlim = c(0.85, 1.00), ylim = c(0.5, length(method_order) + 0.5),
          yaxt = "n", xlab = "Empirical coverage", ylab = "",
          main = bquote(.(functional_label[[fn]]) * "," ~ N == .(N_val)))
     rect(0.95 - 2 * mcse_ref, 0, 0.95 + 2 * mcse_ref, length(method_order) + 1,
