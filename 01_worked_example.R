@@ -260,7 +260,7 @@ replicates <- list(mc_hw = mc_th,
 method_label <- c(wald_expected = "Wald (Expected)",
                   wald_hw       = "Wald (HW)",
                   mc_hw         = "Monte Carlo (HW)",
-                  ij1           = "IJ1 percentile",
+                  ij1           = "IJ percentile",
                   hoij2         = "HOIJ-2 percentile",
                   boot          = "Bootstrap percentile")
 
@@ -409,7 +409,7 @@ for (i in seq_along(fns)) {
   tail_panel(fns[i], "lower", labs[[i]])
   if (i == 1) {
     legend("topleft", inset = c(0, 0.02), bty = "n", cex = 1.15, merge = FALSE,
-           legend = c("Bootstrap", "HOIJ-2", "IJ1", "Monte Carlo",
+           legend = c("Bootstrap", "HOIJ-2", "IJ", "Monte Carlo",
                       "Bootstrap percentile limit"),
            fill   = c(adjustcolor("grey60", alpha.f = 0.5), NA, NA, NA, NA),
            border = c("grey60", NA, NA, NA, NA),
