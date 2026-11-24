@@ -8,8 +8,8 @@
 #   g_delta      weight perturbation of the score               
 #   H_delta      weight perturbation of the information         
 #   Khat(u, v)   third-derivative contraction                   
-#   IJ1          theta-hat + Hhat^-1 g_delta                    
-#   HOIJ-2       IJ1 - Hhat^-1 H_delta d + 1/2 Hhat^-1 Khat(d, d), 
+#   IJ           theta-hat + Hhat^-1 g_delta                    
+#   HOIJ-2       IJ - Hhat^-1 H_delta d + 1/2 Hhat^-1 Khat(d, d), 
 #                with means included in theta for the analysis scripts.
 #                A profiled-mean correction supports covariance-only fits.
 #
@@ -364,6 +364,6 @@ hoij_selftest <- function(tol_rel = 0.01, verbose = TRUE,
   ok <- ok_a && ok_b && ok_c && ok_d && ok_e
   if (ok) say("  self-test PASSED\n\n") else
     warning("hoij_core self-test FAILED; fix this before interpreting any ",
-            "IJ1/HOIJ-2 output.", call. = FALSE)
+            "IJ/HOIJ-2 output.", call. = FALSE)
   invisible(ok)
 }

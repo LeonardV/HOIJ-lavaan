@@ -109,7 +109,7 @@ if (!exists("compute_all_H", mode = "function")) source("hoij_core.R")
 # @param fit         converged lavaan object (single group, ML, complete data)
 # @param functional  NULL, character expression(s), function(s), or a list
 # @param B           number of multinomial weight vectors
-# @param order       1 = IJ1 (linear), 2 = HOIJ-2 (default)
+# @param order       1 = IJ (linear), 2 = HOIJ-2 (default)
 # @param level       confidence level of the percentile interval
 # @param admissibility "keep" (default: all replicates count) or "drop"
 #                    (replicates with a negative variance parameter are
@@ -167,7 +167,7 @@ hoij_lavaan <- function(fit, functional = NULL, B = 1000L, order = 2L,
       stop(sprintf(paste0("The finite-difference route does not reproduce ",
                           "lavaan's observed information (spread = %.3g > ",
                           "%.3g): the second-order step cannot be computed ",
-                          "reliably for this model. Use order = 1 (IJ1) or a ",
+                          "reliably for this model. Use order = 1 (IJ) or a ",
                           "bootstrap."), chk$spread, spread_tol),
            call. = FALSE)
     T_arr <- compute_T_tensor_grad(grad_F, theta0)
@@ -232,7 +232,7 @@ hoij_lavaan <- function(fit, functional = NULL, B = 1000L, order = 2L,
 print.hoij_lavaan <- function(x, digits = 3, ...) {
   d <- x$diagnostics
   cat(if (d$order == 2L) "HOIJ-2 (second-order infinitesimal jackknife)\n"
-      else "IJ1 (first-order infinitesimal jackknife)\n")
+      else "IJ (first-order infinitesimal jackknife)\n")
   cat(sprintf("B = %d weight vectors | %d%% percentile CI | N = %d, D = %d\n",
               d$B, round(100 * d$level), d$N, d$D))
   cat(sprintf("setup %.2fs + replicates %.2fs\n",
