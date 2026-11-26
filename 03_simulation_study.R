@@ -1101,7 +1101,7 @@ col_map <- setNames(c("black", "grey45", "firebrick", "steelblue"),
 
 for (fn in MAIN_FNS) {
   for (N_val in sort(unique(design$N))) {
-    plot(NA, xlim = c(0.85, 1.00), ylim = c(0.5, length(method_order) + 0.5),
+    plot(NA, xlim = c(0.83, 1.00), ylim = c(0.5, length(method_order) + 0.5),
          yaxt = "n", xlab = "Empirical coverage", ylab = "",
          main = bquote(.(functional_label[[fn]]) * "," ~ N == .(N_val)))
     rect(0.95 - 2 * mcse_ref, 0, 0.95 + 2 * mcse_ref, length(method_order) + 1,
