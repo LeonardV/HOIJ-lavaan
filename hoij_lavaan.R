@@ -114,7 +114,11 @@ if (!exists("compute_all_H", mode = "function")) source("hoij_core.R")
 # @param admissibility "keep" (default: all replicates count) or "drop"
 #                    (replicates with a negative variance parameter are
 #                    removed before the SE and interval are computed)
-# @param spread_tol  tolerance on the gradient-Hessian check
+# @param spread_tol  tolerance on the two derivative checks: (1) the
+#                    finite-difference Hessian of the analytic gradient
+#                    (the route used for the third derivatives) and
+#                    (2) the average of the casewise matrices H_i, both
+#                    compared with lavaan's observed information
 # @param seed        optional seed for the weight draws
 # @param details     TRUE: also return the replicates and the weight matrix
 # @return object of class "hoij_lavaan" with $results (est, se, lo, hi),
@@ -157,21 +161,33 @@ hoij_lavaan <- function(fit, functional = NULL, B = 1000L, order = 2L,
     stop("Scores or observed information are not available for this model.",
          call. = FALSE)
 
-  grad_spread <- NA_real_; H_all <- NULL; T_arr <- NULL
+  grad_spread <- NA_real_; H_check <- NA_real_; H_all <- NULL; T_arr <- NULL
   if (order == 2L) {
     H_obs  <- lavaan::lavTech(fit, "information.observed")
+
+    ## (1) gradient route, the basis of the third-derivative array.
+    ## The spread of the elementwise ratios alone would miss a constant
+    ## scale error, so the deviation of the median ratio from 1 counts too.
     grad_F <- make_grad_F(fit)
     chk <- check_gradient_hessian(grad_F, theta0, H_obs)
-    grad_spread <- chk$spread
-    if (!is.finite(chk$spread) || chk$spread > spread_tol)
-      stop(sprintf(paste0("The finite-difference route does not reproduce ",
-                          "lavaan's observed information (spread = %.3g > ",
-                          "%.3g): the second-order step cannot be computed ",
-                          "reliably for this model. Use order = 1 (IJ) or a ",
-                          "bootstrap."), chk$spread, spread_tol),
+    grad_spread <- max(chk$spread, abs(chk$ratio - 1))
+
+    ## (2) casewise route: the average of the H_i must reproduce the
+    ## observed information (same comparison as hoij_selftest(), part b).
+    H_all   <- compute_all_H(fit, theta0)                       # N x D x D
+    H_check <- max(abs(H_obs - apply(H_all, c(2, 3), sum) / N)) /
+      max(abs(H_obs))
+
+    if (!is.finite(grad_spread) || grad_spread > spread_tol ||
+        !is.finite(H_check) || H_check > spread_tol)
+      stop(sprintf(paste0("Numerical second derivatives do not reproduce ",
+                          "lavaan's observed information (gradient route %.3g, ",
+                          "casewise route %.3g; tolerance %.3g): the ",
+                          "second-order step cannot be computed reliably for ",
+                          "this model. Use order = 1 (IJ) or a bootstrap."),
+                   grad_spread, H_check, spread_tol),
            call. = FALSE)
     T_arr <- compute_T_tensor_grad(grad_F, theta0)
-    H_all <- compute_all_H(fit, theta0)
   }
   t_setup <- proc.time()[["elapsed"]] - t0
 
@@ -217,6 +233,7 @@ hoij_lavaan <- function(fit, functional = NULL, B = 1000L, order = 2L,
       order = order, B = B, level = level,
       meanstructure = isTRUE(lavaan::lavInspect(fit, "options")$meanstructure),
       admissibility = admissibility, grad_spread = grad_spread,
+      H_check = H_check,
       frac_inadmissible = mean(inadmiss),
       time_setup_s = t_setup, time_replicates_s = t_rep, N = N, D = D),
     call = match.call())
@@ -238,7 +255,8 @@ print.hoij_lavaan <- function(x, digits = 3, ...) {
   cat(sprintf("setup %.2fs + replicates %.2fs\n",
               d$time_setup_s, d$time_replicates_s))
   if (d$order == 2L)
-    cat(sprintf("derivative check %.1e\n", d$grad_spread))
+    cat(sprintf("derivative checks: gradient %.1e, casewise %.1e\n",
+                d$grad_spread, d$H_check))
   if (d$frac_inadmissible > 0)
     cat(sprintf("inadmissible replicates: %.1f%% (%s)\n",
                 100 * d$frac_inadmissible,

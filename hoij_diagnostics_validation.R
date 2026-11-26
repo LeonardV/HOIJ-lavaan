@@ -168,6 +168,8 @@ hoij_diagnostics <- function(res, functional = NULL, ij = NULL,
 
   numerical <- list(
     derivative_spread = res$diagnostics$grad_spread,
+    casewise_H_check = if (is.null(res$diagnostics$H_check)) NA_real_ else
+      res$diagnostics$H_check,
     observed_information_condition_number = NA_real_
   )
   if (!is.null(fit)) {
@@ -192,7 +194,8 @@ hoij_diagnostics <- function(res, functional = NULL, ij = NULL,
 
 print.hoij_diagnostics <- function(x, ...) {
   print(x$summary, row.names = FALSE, ...)
-  cat("Derivative spread:", x$numerical$derivative_spread, "\n")
+  cat("Derivative check (gradient route):", x$numerical$derivative_spread, "\n")
+  cat("Derivative check (casewise route):", x$numerical$casewise_H_check, "\n")
   if (is.finite(x$numerical$observed_information_condition_number))
     cat("Condition number (scale-dependent):",
         x$numerical$observed_information_condition_number, "\n")
