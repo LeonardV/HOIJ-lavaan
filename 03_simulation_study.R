@@ -837,7 +837,10 @@ summ <- Reduce(function(a, b)
                             label = "n valid"),
              c("N", "dist", "spec", "functional", "method", "n_valid"))))
 
-summ$mcse_cov <- sqrt(0.95 * 0.05 / pmax(summ$n_valid, 1))
+# Monte Carlo SE of each coverage estimate, at its own estimated coverage
+# (the grey band around .95 keeps the nominal-level SE, mcse_ref)
+summ$mcse_cov <- sqrt(summ$covered * (1 - summ$covered) /
+                        pmax(summ$n_valid, 1))
 mcse_ref <- sqrt(0.95 * 0.05 / S)
 cat(sprintf("\nMonte Carlo error on coverage at full validity (S = %d): +/- %.2f percentage points\n",
             S, 100 * mcse_ref))
@@ -1058,7 +1061,10 @@ summ <- Reduce(function(a, b)
                             label = "n valid"),
              c("N", "dist", "spec", "functional", "method", "n_valid"))))
 
-summ$mcse_cov <- sqrt(0.95 * 0.05 / pmax(summ$n_valid, 1))
+# Monte Carlo SE of each coverage estimate, at its own estimated coverage
+# (the grey band around .95 keeps the nominal-level SE, mcse_ref)
+summ$mcse_cov <- sqrt(summ$covered * (1 - summ$covered) /
+                        pmax(summ$n_valid, 1))
 
 # ---------------------------------------------------------------------
 # 4. Figuur: 3 rijen (ab, psi_speed, omega_speed) x 3 N-kolommen
